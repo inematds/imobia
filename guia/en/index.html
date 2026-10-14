@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>imobia — a real estate agency on autopilot</title>
+<meta name="description" content="Plan for a simple, in-house system for a real estate agency: AI answers on WhatsApp (Evolution API) 24/7, qualifies the client and hands them to the agent, who works from Telegram. Proposal under discussion.">
+<link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/imobia/guia/">
+<link rel="alternate" hreflang="en" href="https://inematds.github.io/imobia/guia/en/">
+<link rel="alternate" hreflang="es" href="https://inematds.github.io/imobia/guia/es/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#FACC15; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#a16207; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  body.light pre .k{color:#f0c070}
+  body.light .btn{background:#FACC15}
+  body.light .step .b{background:#FACC15}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  body.light nav{background:rgba(246,247,249,.85)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .lang{display:inline-flex;gap:2px;font-family:Sora;font-size:.78rem}
+  .lang a{color:var(--mut);padding:.2em .45em;border-radius:6px} .lang a.on{color:var(--amb);background:rgba(250,204,21,.12)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  @media(max-width:520px){nav .wrap{gap:8px;padding:8px 14px;height:auto;flex-wrap:wrap} nav .links{gap:8px;margin-left:0;width:100%;justify-content:space-between} nav .btn{padding:.45em .7em;font-size:.82rem} .tgl{width:34px;height:34px}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(250,204,21,.18),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;display:block}
+  .status{display:inline-block;margin-left:8px;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;font-family:Sora;font-weight:600;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:.2em .7em}
+  .resumo{padding:38px 0 34px;border-bottom:1px solid var(--line)}
+  .resumo p{font-size:1.12rem;line-height:1.7;max-width:74ch;margin:.55em 0 0}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .card ul{color:var(--mut);font-size:.92rem;margin:.4em 0 0;padding-left:1.1em}
+  .card.rec{border-color:var(--amb)}
+  .tag-rec{display:inline-block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-family:Sora;font-weight:600;background:var(--amb);color:#1a1206;border-radius:999px;padding:.15em .6em;margin-bottom:.6em}
+  body.light .tag-rec{background:#FACC15}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(250,204,21,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;margin-bottom:26px}
+  .step>div,.card{min-width:0}
+  p code,li code,td code{overflow-wrap:anywhere}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:Sora;font-weight:600;color:var(--txt)}
+  td{color:var(--mut)}
+  .tbl{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:4px}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">🏠</span> imobia</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">What it is</a>
+    <a class="sec" href="#fluxo">How it works</a>
+    <a class="sec" href="#guia">A day</a>
+    <a class="sec" href="#decisao">Decision</a>
+    <a class="sec" href="#roadmap">Phases</a>
+    <span class="lang"><a href="../">PT</a><a class="on" href="./">EN</a><a href="../es/">ES</a></span>
+    <button class="tgl" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+    <a class="btn" href="https://github.com/inematds/imobia" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">System plan</span><span class="status">Proposal under discussion</span>
+      <h1>A real estate agency on <span class="amb">autopilot</span></h1>
+      <p class="lead">AI answers clients on WhatsApp at any hour. The team works from Telegram. The owner follows everything on a dashboard.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">See how it works</a>
+        <a class="btn ghost" href="https://github.com/inematds/imobia/tree/main/docs" target="_blank" rel="noopener">Read the full plan (in Portuguese)</a>
+      </div>
+    </div>
+    <figure><img src="../assets/banner-en.jpg" alt="imobia banner: a real estate agency on autopilot, with WhatsApp, AI and Telegram"></figure>
+  </div>
+</header>
+
+<section id="resumo" class="resumo"><div class="wrap">
+  <span class="chip">In short</span>
+  <p>imobia is the plan for an in-house client service system for a real estate agency that handles sales and rentals with 5 agents. The client sends a message on WhatsApp and an AI replies right away, understands what they are looking for and shows only properties that exist in the listings. When it is time to visit or negotiate, the conversation moves to the agent, who replies from Telegram. There are no forms to fill in: whatever can be automatic, is. This page records the proposal; the system has not been built yet.</p>
+</div></section>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">What it is</span>
+  <h2>Three pieces, no heavy system</h2>
+  <p class="sub">The first recommendation combined EspoCRM, Chatwoot, n8n and Meta's official API. We cut everything that added work without adding results and kept a single in-house app.</p>
+  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="../assets/banner-grade-en.jpg" alt="Dashboard with the imobia modules: WhatsApp, 24/7 AI, real listings, visits, Telegram and dashboard" loading="lazy" style="width:100%;display:block"></figure>
+  <div class="grid g3">
+    <div class="card"><h3>💬 Answers on its own</h3><p>The AI replies 24/7 on WhatsApp, asks what matters (buy or rent, area, price range, bedrooms) and sends photos of real properties.</p></div>
+    <div class="card"><h3>📲 Team on Telegram</h3><p>The agent gets the lead with a summary, replies from Telegram and the message reaches the client's WhatsApp. The AI goes quiet in that conversation.</p></div>
+    <div class="card"><h3>📊 Owner sees everything</h3><p>A read-only dashboard shows the funnel, conversations, properties, visits, each agent's numbers and how much the AI is costing.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">How it works</span>
+  <h2>From “hi” on WhatsApp to the visit</h2>
+  <p class="sub">Everything runs on a VPS with Docker: the Evolution API (the bridge to WhatsApp), the imobia app and a Postgres database.</p>
+  <div class="flow">
+    <span>Client on WhatsApp</span><span class="arr">→</span>
+    <span>Evolution API</span><span class="arr">→</span>
+    <span>AI qualifies</span><span class="arr">→</span>
+    <span>Search the listings</span><span class="arr">→</span>
+    <span>Photos + visit offer</span><span class="arr">→</span>
+    <span>Agent on Telegram</span><span class="arr">→</span>
+    <span>Owner's dashboard</span>
+  </div>
+<pre style="margin-top:26px"><span class="c"># proposed architecture</span>
+Client (WhatsApp)
+      │
+ Evolution API ──► imobia app (Node/TypeScript) ──► Postgres
+                     │  • AI agent with tools
+                     │  • property × client match
+                     │  • follow-up and reminder schedule
+                     ▼
+         Telegram bot (team)      Web dashboard (read-only)</pre>
+</div></section>
+
+<section id="pecas"><div class="wrap">
+  <span class="chip">The pieces inside</span>
+  <h2>What each part does</h2>
+  <p class="sub">Ideas taken from existing projects (imob360, wacrm, EspoCRM, Chatwoot), rewritten our own way.</p>
+  <div class="grid g3">
+    <div class="card"><span class="num">1</span><h3>WhatsApp intake</h3><p>Finds the client by phone number, joins split messages and transcribes audio on the machine itself.</p></div>
+    <div class="card"><span class="num">2</span><h3>AI agent</h3><p>Uses tools: search properties, send photos, offer a visit, call an agent. It never mentions a property that did not come from the database.</p></div>
+    <div class="card"><span class="num">3</span><h3>Handoff to the agent</h3><p>The conversation changes state: AI → waiting for agent → agent → closed. The agent gets a ready summary.</p></div>
+    <div class="card"><span class="num">4</span><h3>Listings without forms</h3><p>The agent sends photos and a voice note on Telegram. The AI fills in the fields and asks for confirmation with a button.</p></div>
+    <div class="card"><span class="num">5</span><h3>Automatic match</h3><p>A new property came in? The system tells the agent about past clients who were looking for something similar.</p></div>
+    <div class="card"><span class="num">6</span><h3>Task schedule</h3><p>Visit reminders and follow-ups on stalled leads, only during business hours and stopping at the first “not interested”.</p></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">A day at the agency</span>
+  <h2>How each person's work looks</h2>
+  <p class="sub">An example of the planned flow. The messages are illustrative.</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>The client writes at 10pm</h3>
+    <p>Nobody on the team is working. The AI replies right away.</p>
+<pre><span class="c"># WhatsApp</span>
+<span class="k">Client:</span> Hi, I want to rent a 2-bedroom apartment downtown, up to 2,500
+<span class="k">AI:</span>     Hi! I have 3 options downtown in that range. Shall I send you the photos?</pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>The AI shows only what exists</h3>
+    <p>It searches the listings, sends the photos and offers visit times. If nothing matches, it says so and offers an agent.</p>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>The agent gets the lead ready</h3>
+    <p>A summary arrives on Telegram. There is no need to ask the client again what they want.</p>
+<pre><span class="c"># Telegram — new lead</span>
+<span class="k">Lead:</span> Ana · rental · downtown · 2 bedrooms · up to R$ 2,500
+<span class="k">Interest:</span> AP-0142, AP-0157 · suggested visit: Sat 10am
+<span class="c"># the agent writes here and the message goes out on Ana's WhatsApp</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>A new property comes in by voice</h3>
+    <p>The agent sends photos and speaks the details. The AI builds the listing and asks for confirmation. Then it notifies whoever was looking for something like it.</p>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>The owner follows along</h3>
+    <p>On the dashboard: how many leads came in, how many turned into visits, who is stalled and how much the AI cost this month.</p>
+  </div></div>
+</div></section>
+
+<section id="decisao"><div class="wrap">
+  <span class="chip">Open decision</span>
+  <h2>How does the team use Telegram?</h2>
+  <p class="sub">This is the choice still needed to close the design. The other parts work with any option.</p>
+  <div class="grid g3">
+    <div class="card rec"><span class="tag-rec">Recommended</span><h3>A) One topic per client</h3><p>One agency group with topics. Each lead becomes a topic, the conversation is mirrored there and the agent replies right in it. All 5 see everything and can cover for each other.</p></div>
+    <div class="card"><h3>B) Private chat per agent</h3><p>Leads are assigned in rotation and each agent sees only their own. To reply, they have to point out which client it is. More private, more confusing.</p></div>
+    <div class="card"><h3>C) Mixed</h3><p>A group for the owner to follow and a private chat for each agent. More complete, with twice the pieces to maintain and explain.</p></div>
+  </div>
+</div></section>
+
+<section id="cuidados"><div class="wrap">
+  <span class="chip">Risks and safeguards</span>
+  <h2>What is already planned for</h2>
+  <p class="sub">Points raised during research, with the safeguard planned for each one.</p>
+  <div class="tbl"><table>
+    <tr><th>Risk</th><th>Safeguard</th></tr>
+    <tr><td>The Evolution API is not official and the number may be banned</td><td>Dedicated SIM, only reply to people who wrote first, human pace, opt-out option, a path to the official API if needed</td></tr>
+    <tr><td>AI making up a property</td><td>It only talks about what comes from the database search</td></tr>
+    <tr><td>AI cost growing</td><td>Cost logged for every reply and a monthly cap</td></tr>
+    <tr><td>iPhone audio failing on some versions</td><td>Ask for text when the audio cannot be read</td></tr>
+    <tr><td>Personal data (LGPD)</td><td>Purpose notice, minimal data, local transcription, retention period</td></tr>
+  </table></div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <span class="chip">Next phases</span>
+  <h2>From plan to a running system</h2>
+  <p class="sub">Instagram, website, listing portals, contracts and rent collection are left out of the first version.</p>
+  <div class="phase"><div class="tag">Now</div><div class="d"><strong>Choose the Telegram model</strong><span>Pick A, B or C.</span></div></div>
+  <div class="phase"><div class="tag">Phase 1</div><div class="d"><strong>Final specification</strong><span>Detailed system document, reviewed and approved.</span></div></div>
+  <div class="phase"><div class="tag">Phase 2</div><div class="d"><strong>Core</strong><span>Evolution, database, AI replying with property listings and handoff to the agent.</span></div></div>
+  <div class="phase"><div class="tag">Phase 3</div><div class="d"><strong>Automation</strong><span>Automatic match, follow-ups, visit reminders and listings by voice.</span></div></div>
+  <div class="phase"><div class="tag">Phase 4</div><div class="d"><strong>Dashboard and pilot</strong><span>Owner's dashboard and real use with the 5 agents.</span></div></div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">Evolution API</div><div class="pill">Node / TypeScript</div><div class="pill">Postgres</div><div class="pill">Telegram Bot</div><div class="pill">Docker</div>
+    <p style="margin-top:18px">imobia · proposal under discussion ·
+      <a href="https://github.com/inematds/imobia">inematds/imobia</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='imobia-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    try{ if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; } }catch(e){}
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      try{ localStorage.setItem(KEY, light?'light':'dark'); }catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>

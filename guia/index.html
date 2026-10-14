@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>imobia — imobiliária no automático</title>
+<meta name="description" content="Plano de um sistema próprio e simples para imobiliária: IA atende no WhatsApp (Evolution API) 24h, qualifica e passa o cliente ao corretor, que trabalha pelo Telegram. Proposta em discussão.">
+<link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/imobia/guia/">
+<link rel="alternate" hreflang="en" href="https://inematds.github.io/imobia/guia/en/">
+<link rel="alternate" hreflang="es" href="https://inematds.github.io/imobia/guia/es/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#FACC15; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#a16207; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  body.light pre .k{color:#f0c070}
+  body.light .btn{background:#FACC15}
+  body.light .step .b{background:#FACC15}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  body.light nav{background:rgba(246,247,249,.85)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .lang{display:inline-flex;gap:2px;font-family:Sora;font-size:.78rem}
+  .lang a{color:var(--mut);padding:.2em .45em;border-radius:6px} .lang a.on{color:var(--amb);background:rgba(250,204,21,.12)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  @media(max-width:520px){nav .wrap{gap:8px;padding:8px 14px;height:auto;flex-wrap:wrap} nav .links{gap:8px;margin-left:0;width:100%;justify-content:space-between} nav .btn{padding:.45em .7em;font-size:.82rem} .tgl{width:34px;height:34px}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(250,204,21,.18),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;display:block}
+  .status{display:inline-block;margin-left:8px;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;font-family:Sora;font-weight:600;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:.2em .7em}
+  .resumo{padding:38px 0 34px;border-bottom:1px solid var(--line)}
+  .resumo p{font-size:1.12rem;line-height:1.7;max-width:74ch;margin:.55em 0 0}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .card ul{color:var(--mut);font-size:.92rem;margin:.4em 0 0;padding-left:1.1em}
+  .card.rec{border-color:var(--amb)}
+  .tag-rec{display:inline-block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-family:Sora;font-weight:600;background:var(--amb);color:#1a1206;border-radius:999px;padding:.15em .6em;margin-bottom:.6em}
+  body.light .tag-rec{background:#FACC15}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(250,204,21,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;margin-bottom:26px}
+  .step>div,.card{min-width:0}
+  p code,li code,td code{overflow-wrap:anywhere}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:Sora;font-weight:600;color:var(--txt)}
+  td{color:var(--mut)}
+  .tbl{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:4px}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">🏠</span> imobia</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">O que é</a>
+    <a class="sec" href="#fluxo">Como funciona</a>
+    <a class="sec" href="#guia">Um dia</a>
+    <a class="sec" href="#decisao">Decisão</a>
+    <a class="sec" href="#roadmap">Fases</a>
+    <span class="lang"><a class="on" href="./">PT</a><a href="en/">EN</a><a href="es/">ES</a></span>
+    <button class="tgl" id="themeToggle" aria-label="Alternar tema" title="Alternar tema">🌙</button>
+    <a class="btn" href="https://github.com/inematds/imobia" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">Plano de sistema</span><span class="status">Proposta em discussão</span>
+      <h1>Imobiliária no <span class="amb">automático</span></h1>
+      <p class="lead">A IA atende o cliente no WhatsApp a qualquer hora. A equipe trabalha pelo Telegram. O dono acompanha tudo num painel.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">Ver como funciona</a>
+        <a class="btn ghost" href="https://github.com/inematds/imobia/tree/main/docs" target="_blank" rel="noopener">Ler o plano completo</a>
+      </div>
+    </div>
+    <figure><img src="assets/banner.jpg" alt="Banner do imobia: imobiliária no automático, com WhatsApp, IA e Telegram"></figure>
+  </div>
+</header>
+
+<section id="resumo" class="resumo"><div class="wrap">
+  <span class="chip">Em resumo</span>
+  <p>O imobia é o plano de um sistema próprio de atendimento para uma imobiliária de venda e locação com 5 corretores. O cliente manda mensagem no WhatsApp e uma inteligência artificial responde na hora, entende o que ele procura e mostra só imóveis que existem no cadastro. Quando chega a hora de visitar ou negociar, a conversa passa para o corretor, que responde pelo Telegram. Não tem formulário para preencher: o que pode ser automático, é. Esta página registra a proposta; o sistema ainda não foi construído.</p>
+</div></section>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">O que é</span>
+  <h2>Três peças, nada de sistema pesado</h2>
+  <p class="sub">A recomendação inicial juntava EspoCRM, Chatwoot, n8n e a API oficial da Meta. Cortamos tudo o que dava trabalho sem trazer resultado e ficamos com um app próprio.</p>
+  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="assets/banner-grade.jpg" alt="Painel com os módulos do imobia: WhatsApp, IA 24h, imóveis reais, visitas, Telegram e painel" loading="lazy" style="width:100%;display:block"></figure>
+  <div class="grid g3">
+    <div class="card"><h3>💬 Atende sozinho</h3><p>A IA responde 24h no WhatsApp, pergunta o que importa (comprar ou alugar, região, faixa de preço, quartos) e manda fotos de imóveis reais.</p></div>
+    <div class="card"><h3>📲 Equipe no Telegram</h3><p>O corretor recebe o lead já com resumo, responde pelo Telegram e a mensagem chega no WhatsApp do cliente. A IA se cala naquela conversa.</p></div>
+    <div class="card"><h3>📊 Dono vê tudo</h3><p>Um painel só de leitura mostra funil, conversas, imóveis, visitas, números de cada corretor e quanto a IA está custando.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">Como funciona</span>
+  <h2>Do “oi” no WhatsApp até a visita</h2>
+  <p class="sub">Tudo roda numa VPS com Docker: a Evolution API (ponte com o WhatsApp), o app imobia e um banco Postgres.</p>
+  <div class="flow">
+    <span>Cliente no WhatsApp</span><span class="arr">→</span>
+    <span>Evolution API</span><span class="arr">→</span>
+    <span>IA qualifica</span><span class="arr">→</span>
+    <span>Busca no cadastro</span><span class="arr">→</span>
+    <span>Fotos + proposta de visita</span><span class="arr">→</span>
+    <span>Corretor no Telegram</span><span class="arr">→</span>
+    <span>Painel do dono</span>
+  </div>
+<pre style="margin-top:26px"><span class="c"># arquitetura proposta</span>
+Cliente (WhatsApp)
+      │
+ Evolution API ──► App imobia (Node/TypeScript) ──► Postgres
+                     │  • agente de IA com ferramentas
+                     │  • match imóvel × cliente
+                     │  • agenda de follow-ups e lembretes
+                     ▼
+         Bot do Telegram (equipe)      Painel web (só leitura)</pre>
+</div></section>
+
+<section id="pecas"><div class="wrap">
+  <span class="chip">As peças por dentro</span>
+  <h2>O que cada parte faz</h2>
+  <p class="sub">Ideias tiradas de projetos que já existem (imob360, wacrm, EspoCRM, Chatwoot), reescritas do nosso jeito.</p>
+  <div class="grid g3">
+    <div class="card"><span class="num">1</span><h3>Recepção do WhatsApp</h3><p>Acha o cliente pelo telefone, junta mensagens picadas e transcreve áudio na própria máquina.</p></div>
+    <div class="card"><span class="num">2</span><h3>Agente de IA</h3><p>Usa ferramentas: buscar imóveis, enviar fotos, propor visita, chamar corretor. Nunca cita imóvel que não veio do banco.</p></div>
+    <div class="card"><span class="num">3</span><h3>Passagem para o corretor</h3><p>A conversa muda de estado: IA → aguardando corretor → corretor → encerrada. O corretor recebe o resumo pronto.</p></div>
+    <div class="card"><span class="num">4</span><h3>Cadastro sem formulário</h3><p>O corretor manda fotos e um áudio no Telegram. A IA preenche os campos e pede confirmação com um botão.</p></div>
+    <div class="card"><span class="num">5</span><h3>Match automático</h3><p>Entrou imóvel novo? O sistema avisa o corretor dos clientes antigos que procuravam algo parecido.</p></div>
+    <div class="card"><span class="num">6</span><h3>Agenda de tarefas</h3><p>Lembrete de visita e retomada de lead parado, só em horário comercial e parando no primeiro “não quero”.</p></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">Um dia na imobiliária</span>
+  <h2>Como fica o trabalho de cada um</h2>
+  <p class="sub">Exemplo do fluxo pensado. As mensagens são ilustrativas.</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>O cliente chama às 22h</h3>
+    <p>Ninguém da equipe está trabalhando. A IA responde na hora.</p>
+<pre><span class="c"># WhatsApp</span>
+<span class="k">Cliente:</span> Oi, quero alugar um apê de 2 quartos no Centro até 2.500
+<span class="k">IA:</span>      Oi! Tenho 3 opções no Centro dentro desse valor. Te mando as fotos?</pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>A IA mostra só o que existe</h3>
+    <p>Busca no cadastro, manda as fotos e propõe horários de visita. Se não houver nada compatível, diz isso e oferece um corretor.</p>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>O corretor recebe o lead pronto</h3>
+    <p>No Telegram chega um resumo. Ele não precisa perguntar de novo o que o cliente quer.</p>
+<pre><span class="c"># Telegram — lead novo</span>
+<span class="k">Lead:</span> Ana · aluguel · Centro · 2 quartos · até R$ 2.500
+<span class="k">Interesse:</span> AP-0142, AP-0157 · visita sugerida: sáb 10h
+<span class="c"># o corretor escreve aqui e a mensagem sai no WhatsApp da Ana</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>Imóvel novo entra por áudio</h3>
+    <p>O corretor manda fotos e fala os dados. A IA monta a ficha e pede confirmação. Em seguida avisa quem procurava algo assim.</p>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>O dono acompanha</h3>
+    <p>No painel: quantos leads entraram, quantos viraram visita, quem está parado e quanto a IA custou no mês.</p>
+  </div></div>
+</div></section>
+
+<section id="decisao"><div class="wrap">
+  <span class="chip">Decisão em aberto</span>
+  <h2>Como a equipe usa o Telegram?</h2>
+  <p class="sub">É a escolha que falta para fechar o desenho. As outras partes valem para qualquer opção.</p>
+  <div class="grid g3">
+    <div class="card rec"><span class="tag-rec">Recomendada</span><h3>A) Um tópico por cliente</h3><p>Um grupo da imobiliária com tópicos. Cada lead vira um tópico, a conversa aparece espelhada e o corretor responde ali mesmo. Os 5 veem tudo e um cobre o outro.</p></div>
+    <div class="card"><h3>B) Privado por corretor</h3><p>O lead é distribuído em rodízio e cada corretor vê só os seus. Para responder, precisa indicar qual é o cliente. Mais privado, mais confuso.</p></div>
+    <div class="card"><h3>C) Misto</h3><p>Grupo para o dono acompanhar e privado para cada corretor. Mais completo, com o dobro de peças para manter e explicar.</p></div>
+  </div>
+</div></section>
+
+<section id="cuidados"><div class="wrap">
+  <span class="chip">Riscos e cuidados</span>
+  <h2>O que já está previsto</h2>
+  <p class="sub">Pontos levantados na pesquisa, com a proteção pensada para cada um.</p>
+  <div class="tbl"><table>
+    <tr><th>Risco</th><th>Proteção</th></tr>
+    <tr><td>A Evolution API não é oficial e o número pode ser banido</td><td>Chip dedicado, só responder quem chamou, ritmo humano, opção de sair, caminho para a API oficial se precisar</td></tr>
+    <tr><td>IA inventar imóvel</td><td>Ela só fala do que vem da busca no banco</td></tr>
+    <tr><td>Custo da IA crescer</td><td>Registro do custo de cada resposta e limite mensal</td></tr>
+    <tr><td>Áudio de iPhone falhar em algumas versões</td><td>Pedir texto quando o áudio não for lido</td></tr>
+    <tr><td>Dados pessoais (LGPD)</td><td>Aviso de finalidade, dados mínimos, transcrição local, prazo de guarda</td></tr>
+  </table></div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <span class="chip">Próximas fases</span>
+  <h2>Do plano ao sistema rodando</h2>
+  <p class="sub">Instagram, site, portais, contratos e cobrança de aluguel ficam fora da primeira versão.</p>
+  <div class="phase"><div class="tag">Agora</div><div class="d"><strong>Decidir o modelo do Telegram</strong><span>Escolher entre A, B ou C.</span></div></div>
+  <div class="phase"><div class="tag">Fase 1</div><div class="d"><strong>Especificação final</strong><span>Documento detalhado do sistema, revisado e aprovado.</span></div></div>
+  <div class="phase"><div class="tag">Fase 2</div><div class="d"><strong>Núcleo</strong><span>Evolution, banco, IA respondendo com cadastro de imóveis e passagem para o corretor.</span></div></div>
+  <div class="phase"><div class="tag">Fase 3</div><div class="d"><strong>Automação</strong><span>Match automático, follow-ups, lembretes de visita e cadastro por áudio.</span></div></div>
+  <div class="phase"><div class="tag">Fase 4</div><div class="d"><strong>Painel e piloto</strong><span>Painel do dono e uso real com os 5 corretores.</span></div></div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">Evolution API</div><div class="pill">Node / TypeScript</div><div class="pill">Postgres</div><div class="pill">Telegram Bot</div><div class="pill">Docker</div>
+    <p style="margin-top:18px">imobia · proposta em discussão ·
+      <a href="https://github.com/inematds/imobia">inematds/imobia</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='imobia-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    try{ if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; } }catch(e){}
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      try{ localStorage.setItem(KEY, light?'light':'dark'); }catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>
